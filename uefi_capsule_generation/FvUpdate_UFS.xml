@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/** @file FVUpdate_UFS.xml
+
+  PayloadGenerator xml configuration file for QCM6490 UFS flash
+
+  This file configure the content of the payload for firmware update
+
+# Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+**/
+
+#Operation Type
+  IGNORE
+  UPDATE
+  DELETE
+
+#DiskType
+=========                   =============
+  UFS_LUN0                 (Not supported)
+  UFS_LUN1                 (Supported)
+  UFS_LUN2                 (Not supported)
+  UFS_LUN3                 (Not supported)
+  UFS_LUN4                 (Supported)
+  UFS_LUN5                 (Not supported)
+  UFS_LUN6                 (Not supported)
+  UFS_LUN7                 (Not supported)
+  SPINOR                   (Not supported)
+  NVME                     (Not supported)
+
+#UpdateType
+  UPDATE_PARTITION
+  UPDATE_DPP_QCOM
+  UPDATE_DPP_OEM
+  UPDATE_OPM_PRIV_KEY
+  UPDATE_FWCLASS_GUID
+
+#backup Type
+  BACKUP_PARTITION
+
+#NOTE: PartitionName is Case sensitive
+
+-->
+<FVItems>
+<!--Metadata configuration -->
+    <Metadata>
+      <BreakingChangeNumber>0</BreakingChangeNumber>
+      <FlashType>UFS</FlashType>
+    </Metadata>
+
+<!--BootLoader entries-->
+
+<!--LUN1 LUN2 XBL-->
+  <FwEntry>
+    <InputBinary>xbl.elf</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN1</DiskType>
+      <PartitionName>xbl_a</PartitionName>
+      <PartitionTypeGUID>{DEA0BA2C-CBDD-4805-B4F9-F428251C3E98}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+       <DiskType>UFS_LUN2</DiskType>
+      <PartitionName>xbl_b</PartitionName>
+      <PartitionTypeGUID>{DEA0BA2C-CBDD-4805-B4F9-F428251C3E98}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+<!--LUN1 LUN2 XBL_CONFIG-->
+  <FwEntry>
+    <InputBinary>xbl_config.elf</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN1</DiskType>
+      <PartitionName>xbl_config_a</PartitionName>
+      <PartitionTypeGUID>{5A325AE4-4276-B66D-0ADD-3494DF27706A}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN2</DiskType>
+      <PartitionName>xbl_config_b</PartitionName>
+      <PartitionTypeGUID>{5A325AE4-4276-B66D-0ADD-3494DF27706A}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+
+<!--LUN4 QUP-->
+  <FwEntry>
+    <InputBinary>qupv3fw.elf</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>qupfw_a</PartitionName>
+      <PartitionTypeGUID>{21D1219F-2ED1-4AB4-930A-41A16AE75F7F}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>qupfw_b</PartitionName>
+      <PartitionTypeGUID>{04BA8D53-5091-4958-9CA1-0FE0941D2CBC}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+
+<!--LUN4 ImageFv-->
+  <FwEntry>
+    <InputBinary>imagefv.elf</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>imagefv_a</PartitionName>
+      <PartitionTypeGUID>{17911177-C9E6-4372-933C-804B678E666F}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>imagefv_b</PartitionName>
+      <PartitionTypeGUID>{920cfc3d-7285-4a47-9c1c-4a87590e0687}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+ 
+<!--LUN4 uefi-->
+  <FwEntry>
+    <InputBinary>uefi.elf</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>uefi_a</PartitionName>
+      <PartitionTypeGUID>{400FFDCD-22E0-47E7-9A23-F16ED9382388}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>uefi_b</PartitionName>
+      <PartitionTypeGUID>{9F234B5B-0EFB-4313-8E4C-0AF1F605536B}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+
+<!--LUN4 AOP -->
+  <FwEntry>
+    <InputBinary>aop.mbn</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>aop_a</PartitionName>
+      <PartitionTypeGUID>{D69E90A5-4CAB-0071-F6DF-AB977F141A7F}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>aop_b</PartitionName>
+      <PartitionTypeGUID>{B8B27C4C-4B5B-8AB2-502F-A792B590A896}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+
+<!--LUN4 HYP-->
+  <FwEntry>
+    <InputBinary>hypvm.mbn</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>hyp_a</PartitionName>
+      <PartitionTypeGUID>{E1A6A689-0C8D-4CC6-B4E8-55A4320FBD8A}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>hyp_b</PartitionName>
+      <PartitionTypeGUID>{3D3E3AD2-8FF3-4975-A7E7-0E8A10B69F0D}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+
+<!--LUN4 DEVCFG-->
+  <FwEntry>
+    <InputBinary>devcfg.mbn</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>devcfg_a</PartitionName>
+      <PartitionTypeGUID>{F65D4B16-343D-4E25-AAFC-BE99B6556A6D}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>devcfg_b</PartitionName>
+      <PartitionTypeGUID>{4E820A31-17E3-447D-B32D-FB339F7EA1A2}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+<!--LUN4 TZ-->
+  <FwEntry>
+    <InputBinary>tz.mbn</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>tz_a</PartitionName>
+      <PartitionTypeGUID>{A053AA7F-40B8-4B1C-BA08-2F68AC71A4F4}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>tz_b</PartitionName>
+      <PartitionTypeGUID>{C832EA16-8B0D-4398-A67B-EBB30EF98E7E}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+<!--LUN4 CPUCP-->
+  <FwEntry>
+    <InputBinary>cpucp.elf</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>cpucp_a</PartitionName>
+      <PartitionTypeGUID>{1E8615BD-6D8C-41AD-B3EA-50E8BF40E43F}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>cpucp_b</PartitionName>
+      <PartitionTypeGUID>{6C1111FB-5354-41DE-AC17-5B6E542BE836}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+<!--LUN4 DTB-->
+  <FwEntry>
+    <InputBinary>dtb.bin</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>dtb_a</PartitionName>
+      <PartitionTypeGUID>{2a1a52fc-aa0b-401c-a808-5ea0f91068f8}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>dtb_b</PartitionName>
+      <PartitionTypeGUID>{a166f11a-2b39-4faa-b7e7-f8aa080d0587}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+<!--LUN4 SHRM-->
+  <FwEntry>
+    <InputBinary>shrm.elf</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>shrm_a</PartitionName>
+      <PartitionTypeGUID>{CB74CA22-2F0D-4B82-A1D6-C4213F348D73}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>shrm_b</PartitionName>
+      <PartitionTypeGUID>{39FD6C00-49EB-6BD1-6899-2FB849DD4F75}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+
+
+<!--LUN4 MULTIIMGOEM-->
+  <!--MULTIIMGOEM key-->
+  <!--OEM can enable if needed-->
+  <FwEntry>
+    <InputBinary>multi_image.mbn</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>IGNORE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>multiimgoem_a</PartitionName>
+      <PartitionTypeGUID>{E126A436-757E-42D0-8D19-0F362F7A62B8}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>multiimgoem_b</PartitionName>
+      <PartitionTypeGUID>{3E3E3ECD-C512-4F95-9144-6063826A8970}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+<!--LUN4 XBL_RAMDUMP-->
+ <FwEntry>
+    <InputBinary>XblRamdump.elf</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>xbl_ramdump_a</PartitionName>
+      <PartitionTypeGUID>{0382F197-E41F-4E84-B18B-0B564AEAD875}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>xbl_ramdump_b</PartitionName>
+      <PartitionTypeGUID>{C3E58B09-ABCB-42EA-9F0C-3FA453FA892E}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+<!--LUN4 uefisec_app-->
+  <FwEntry>
+    <InputBinary>uefi_sec.mbn</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>uefisecapp_a</PartitionName>
+      <PartitionTypeGUID>{BE8A7E08-1B7A-4CAE-993A-D5B7FB55B3C2}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+      <DiskType>UFS_LUN4</DiskType>
+      <PartitionName>uefisecapp_b</PartitionName>
+      <PartitionTypeGUID>{538CBDBA-D4A4-4438-A466-D7B356FAC165}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+<!--Blacklist -->
+
+</FVItems>
