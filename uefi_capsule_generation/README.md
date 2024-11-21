@@ -33,7 +33,8 @@ QcFMPSub.pub.pem
 
 1. **Setup the Environment:**
    ```sh
-   python3 capsule_setup.py
+   python3 capsule_setup.py 
+   Note: if this fails with some error, please create a folder ../uefi_capsule_generationCommon_sync/.git/**info**
 2. **Generate Firmware Version File:**
    ```sh
    python3 SYSFW_VERSION_program.py -Gen -FwVer 0.0.A.B -LFwVer 0.0.0.0 -O SYSFW_VERSION.bin
