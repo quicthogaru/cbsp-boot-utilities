@@ -34,21 +34,13 @@
 #include <errno.h>
 #include <BufferAllocator/BufferAllocatorWrapper.h>
 #include <dirent.h>
-#include "TZCom.h"
-#include "IClientEnv.h"
-#include "object.h"
-#include "CRPMBService.h"
-#include "IRPMBService.h"
 
 #define ION_BIT(nr)                     (1U << (nr))
 #define ION_QSECOM_HEAP_ID              ION_BIT(7)
 
-#include <linux/dma-buf.h>
-
 #include "QSEEComAPI.h"
 #include <sys/mman.h>
 #include <getopt.h>
-#include "comdef.h"
 #include <dlfcn.h>
 
 #include <log.h>
