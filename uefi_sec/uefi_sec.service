@@ -9,9 +9,10 @@ Requires=qteesupplicant.service
 DefaultDependencies=no
 
 [Service]
-Type=oneshot
+Type=simple
+ExecStart=/usr/bin/uefi_sec &
+ExecStartPost=/bin/true
 RemainAfterExit=yes
-ExecStart=/usr/bin/uefi_sec
 
 [Install]
 WantedBy=multi-user.target
