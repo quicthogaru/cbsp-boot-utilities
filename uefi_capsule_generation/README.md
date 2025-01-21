@@ -31,15 +31,14 @@ QcFMPCert.pem
 QcFMPRoot.pub.pem
 QcFMPSub.pub.pem
 
-### Steps to Generate Capsule Files
+## 4. Steps to Generate Capsule Files
 
 1. **Setup the Environment:**
    ```sh
    python3 capsule_setup.py
    ```
-   Note: There is a known issue with this python script in Windows environment. Fix would be available shortly.
 
-2. **Generate Firmware Version File:**
+2. **Generate Firmware Version bin File:**
    ```sh
    python3 SYSFW_VERSION_program.py -Gen -FwVer 0.0.A.B -LFwVer 0.0.0.0 -O SYSFW_VERSION.bin
    ```
@@ -50,6 +49,12 @@ QcFMPSub.pub.pem
    -FwVer: Specifies the firmware version.<p>
    -LFwVer: Specifies the lowest firmware version.<p>
    -O: Output file name.<p>
+
+   ```
+   python3 SYSFW_VERSION_program.py  --PrintAll .\SYSFW_VERSION.bin
+   ```
+   - Then above command will print the Firmware Verions in the .bin file
+   
    
 3. **Create Firmware Volume (FV):**
    ```sh
@@ -84,6 +89,7 @@ QcFMPSub.pub.pem
       -   Kodiak FMP GUID: 6F25BFD2-A165-468B-980F-AC51A0A45C52<p>
       -    Lemans FMP GUID: 78462415-6133-431C-9FAE-48F2BAFD5C71<p>
       -    Monaco FMP GUID: 8BF4424F-E842-409C-80BE-1418E91EF343<p>
+
 5. **Generate the Capsule File:**
    ```sh
    python3 GenerateCapsule.py -e -j config.json -o <capsule_name>.cap --capflag PersistAcrossReset -v
@@ -94,3 +100,9 @@ QcFMPSub.pub.pem
    -o : kodiak_fw_zak2.cap: Output capsule file.<p>
    --capflag : PersistAcrossReset: Flag to persist across reset.<p>
    -v: Verbose mode.<p>
+
+   ```
+   python3 .\GenerateCapsule.py  --dump-info <capsule_name>.cap
+   ```
+
+   - The above command witll dump the info from Capsule headers.
