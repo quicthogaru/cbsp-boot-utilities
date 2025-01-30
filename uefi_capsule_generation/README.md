@@ -26,14 +26,15 @@ The tools can be run on both Windows and Linux environments, providing flexibili
 Before starting the capsule generation process, you need to generate OpenSSL certificates as mentioned in https://github.com/tianocore/tianocore.github.io/wiki/Capsule-Based-System-Firmware-Update-Generate-Keys. These certificates should be placed in a separate folder named 'Certificates'.
 
 The `QcFMPRoot.cer` (or `NewRoot.cer`) should be converted to a hex value provided in the BOOT DT at `/sw/uefi/uefiplat/QcCapsuleRootCert`.
-Need to use https://github.com/tianocore/edk2/blob/master/BaseTools/Scripts/BinToPcd.py tool to convert `NewRoot.cer` to a readable PCD value.
+Need to use BinToHex.py tool to convert `NewRoot.cer` to a Hex value
 
 ```
-python3 BinToPcd.py -i NewRoot.cer -x -o NewRoot.inc
+python3 BinToHex.py  NewRoot.cer  NewRoot.inc
 
-python3 CleanHexFile.py NewRoot.inc
+Usage:
+BintoHex.py  <InputFile> <OutputFile>
 ```
-- This NewRoot.inc has the cert value, which need to be provided in the Boot DT at `/sw/uefi/uefiplat/QcCapsuleRootCert`.
+- This NewRoot.inc has the cert value, which need to be provided in the Boot DT at `/sw/uefi/uefiplat/QcCapsuleRootCert` [Using QDTE tool].
 
 Sample files available in Certificates folder:
 QcFMPCert.pem
