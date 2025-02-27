@@ -74,11 +74,12 @@ BintoHex.py  <InputFile> <OutputFile>
    python3 FVCreation.py firmware.fv "-FvType" "SYS_FW" "FvUpdate_UFS.xml" SYSFW_VERSION.bin Images/
    ```
 
+   **Ensure the /Images folder contains all the required firmware images.**
+   
+   **Update FvUpdate_UFS.xml with entries for each firmware image, referencing the corresponding image in the /Images folder.**
 
-   Please have the **/Images** folder available with all required FW images, as per FvUpdate_UFS.xml
+   
    firmware.fv: The firmware volume file.<p>
-
-
    -FvType: Type of firmware volume.<p>
    FvUpdate_UFS.xml: XML file for firmware update.<p>
    SYSFW_VERSION.bin: The firmware version file generated in the previous step.<p>
@@ -86,7 +87,7 @@ BintoHex.py  <InputFile> <OutputFile>
 
 4. **Update JSON Parameters:**
    ```sh
-   python3 UpdateJsonParameters.py -j config.json -f SYS_FW -b SYSFW_VERSION.bin -pf firmware.fv -p Certificates/QcFMPCert.pem -x Certificates/QcFMPRoot.pub.pem -oc Certificates/QcFMPSub.pub.pem -g <FMP GUID>
+   python3 UpdateJsonParameters.py -j config.json -f SYS_FW -b SYSFW_VERSION.bin -pf firmware.fv -p Certificates/QcFMPCert.pem -x Certificates/QcFMPRoot.pub.pem -oc Certificates/QcFMPSub.pub.pem -g <ESRT GUID>
    ```
 
 
@@ -97,11 +98,11 @@ BintoHex.py  <InputFile> <OutputFile>
    -p Certificates/QcFMPCert.pem: Certificate file.<p>
    -x Certificates/QcFMPRoot.pub.pem: Root public certificate.<p>
    -oc Certificates/QcFMPSub.pub.pem: Subordinate public certificate.<p>
-   -g <FMP GUID>: Firmware Management Protocol (FMP) GUID.<p>
-       FMP GUIDs :<p>
-      -   Kodiak FMP GUID: 6F25BFD2-A165-468B-980F-AC51A0A45C52<p>
-      -    Lemans FMP GUID: 78462415-6133-431C-9FAE-48F2BAFD5C71<p>
-      -    Monaco FMP GUID: 8BF4424F-E842-409C-80BE-1418E91EF343<p>
+   -g <ESRT GUID>: ESRT GUID.<p>
+       ESRT GUIDs :<p>
+      -   Kodiak  ESRT GUID: 6F25BFD2-A165-468B-980F-AC51A0A45C52<p>
+      -   Lemans ESRT GUID: 78462415-6133-431C-9FAE-48F2BAFD5C71<p>
+      -   Monaco ESRT GUID: 8BF4424F-E842-409C-80BE-1418E91EF343<p>
 
 5. **Generate the Capsule File:**
    ```sh
@@ -119,3 +120,11 @@ BintoHex.py  <InputFile> <OutputFile>
    ```
 
    - The above command witll dump the info from Capsule headers.
+
+6. Master script for Capsule Generation:
+
+   You can use the following Master script to run all the above steps in single step:.
+   ```
+   python3 capsule_creator.py -fwver 0.0.A.B -lfwver 0.0.0.0 -config config.json -p Certificates/QcFMPCert.pem -x Certificates/QcFMPRoot.pub.pem -oc Certificates/QcFMPSub.pub.pem -guid <ESRT GUID> -capsule <capsule_name>.cap -images /Images -setup
+   ```
+   The **-setup** parameter is optional and can be used for the initial setup. You can omit it in subsequent runs
