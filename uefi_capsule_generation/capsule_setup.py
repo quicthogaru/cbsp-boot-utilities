@@ -392,7 +392,7 @@ def sync_single_dir(edk2_git_repo_sync_url, branch, target_dir, local_path):
                                             'info',
                                             'sparse-checkout')
         print(f"\n\nsparse_checkout_file: {sparse_checkout_file}\n\n")
-        if not os.path.exist(os.path.join(local_path, '.git', 'info')):
+        if not os.path.exists(os.path.join(local_path, '.git', 'info')):
             os.mkdir(os.path.join(local_path, '.git', 'info'))
         with open(sparse_checkout_file, 'w') as f:
             f.write("%s/\n" % (target_dir))
