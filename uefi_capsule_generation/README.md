@@ -71,12 +71,13 @@ BintoHex.py  <InputFile> <OutputFile>
    
 3. **Create Firmware Volume (FV):**
    ```sh
-   python3 FVCreation.py firmware.fv "-FvType" "SYS_FW" "FvUpdate_UFS.xml" SYSFW_VERSION.bin Images/
+   python3 FVCreation.py firmware.fv "-FvType" "SYS_FW" "FvUpdate.xml" SYSFW_VERSION.bin Images/
    ```
 
-   **Ensure the /Images folder contains all the required firmware images.**
+   **Ensure the /Images folder contains all the required firmware images for Capsule generation**
    
-   **Update FvUpdate_UFS.xml with entries for each firmware image, referencing the corresponding image in the /Images folder.**
+   ***Update FvUpdate.xml with FwEntry for each firmware image, referencing the corresponding image in the /Images folder.***
+   ***Please refer FirmwarePartitions for Partition related information***
 
    
    firmware.fv: The firmware volume file.<p>

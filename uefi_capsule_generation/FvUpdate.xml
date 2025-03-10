@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/** @file FVUpdate.xml
+
+    This file configure the content of the payload for firmware update
+
+# Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+**/
+
+#FlashType
+  UFS
+  EMMC
+
+
+#Operation Type
+  IGNORE
+  UPDATE
+
+#DiskType
+=========                   =============
+  UFS_LUN0                 (Not supported)
+  UFS_LUN1                 (Supported)
+  UFS_LUN2                 (Not supported)
+  UFS_LUN3                 (Not supported)
+  UFS_LUN4                 (Supported)
+  UFS_LUN5                 (Not supported)
+  UFS_LUN6                 (Not supported)
+  UFS_LUN7                 (Not supported)
+  SPINOR                   (Not supported)
+  NVME                     (Not supported)
+  EMMC_PARTITION_USER_DATA (Supported)
+
+#UpdateType
+  UPDATE_PARTITION
+
+#backup Type
+  BACKUP_PARTITION
+
+#NOTE: PartitionName is Case sensitive
+#For PartitionName and PartitionTypeGUID refer FirmwarePartition.md
+
+-->
+<FVItems>
+<!--Sample Metadata configuration for UFS FlashTYpe-->
+    <Metadata>
+      <BreakingChangeNumber>0</BreakingChangeNumber>
+      <FlashType>UFS</FlashType>
+    </Metadata>
+
+<!--BootLoader entries-->
+
+<!--Sample FwEntry for LUN1 XBL-->
+  <FwEntry>
+    <InputBinary>xbl.elf</InputBinary>
+    <InputPath>Images</InputPath>
+    <Operation>UPDATE</Operation>
+    <UpdateType>UPDATE_PARTITION</UpdateType>
+    <BackupType>BACKUP_PARTITION</BackupType>
+    <Dest>
+      <DiskType>UFS_LUN1</DiskType>
+      <PartitionName>xbl_a</PartitionName>
+      <PartitionTypeGUID>{DEA0BA2C-CBDD-4805-B4F9-F428251C3E98}</PartitionTypeGUID>
+    </Dest>
+    <Backup>
+       <DiskType>UFS_LUN1</DiskType>
+      <PartitionName>xbl_b</PartitionName>
+      <PartitionTypeGUID>{7A3DF1A3-A31A-454D-BD78-DF259ED486BE}</PartitionTypeGUID>
+    </Backup>
+  </FwEntry>
+
+<!--Add FwEntries based on requirement-->
+
+
+<!--Blacklist -->
+
+</FVItems>
