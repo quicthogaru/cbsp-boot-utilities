@@ -25,7 +25,7 @@ def main(args):
     run_command(f"python3 SYSFW_VERSION_program.py -Gen -FwVer {args.fwver} -LFwVer {args.lfwver} -O SYSFW_VERSION.bin")
     
     # Step 2: Create firmware volume
-    run_command(f'python3 FVCreation.py firmware.fv "-FvType" "SYS_FW" "FvUpdate_UFS.xml" SYSFW_VERSION.bin {args.images}')
+    run_command(f'python3 FVCreation.py firmware.fv "-FvType" "SYS_FW" "FvUpdate.xml" SYSFW_VERSION.bin {args.images}')
     
     # Step 3: Update JSON parameters
     run_command(f'python3 UpdateJsonParameters.py -j {args.config} -f SYS_FW -b SYSFW_VERSION.bin -pf firmware.fv -p {args.p} -x {args.x} -oc {args.oc} -g {args.guid}')
