@@ -71,12 +71,12 @@ BintoHex.py  <InputFile> <OutputFile>
    
 3. **Create Firmware Volume (FV):**
    ```sh
-   python3 FVCreation.py firmware.fv "-FvType" "SYS_FW" "FvUpdate_UFS.xml" SYSFW_VERSION.bin Images/
+   python3 FVCreation.py firmware.fv "-FvType" "SYS_FW" "FvUpdate.xml" SYSFW_VERSION.bin Images/
    ```
 
-   **Ensure the /Images folder contains all the required firmware images.**
-   
-   **Update FvUpdate_UFS.xml with entries for each firmware image, referencing the corresponding image in the /Images folder.**
+      ***\* Ensure the /Images folder contains all the required firmware images for Capsule generation***<p>
+      ***\* Update FvUpdate.xml with FwEntry for each firmware image, referencing the corresponding image in the /Images folder.***<p>
+      ***\* Please refer FirmwarePartitions.md for Partitions related information***
 
    
    firmware.fv: The firmware volume file.<p>
@@ -100,9 +100,9 @@ BintoHex.py  <InputFile> <OutputFile>
    -oc Certificates/QcFMPSub.pub.pem: Subordinate public certificate.<p>
    -g <ESRT GUID>: ESRT GUID.<p>
        ESRT GUIDs :<p>
-      -   Kodiak  ESRT GUID: 6F25BFD2-A165-468B-980F-AC51A0A45C52<p>
-      -   Lemans ESRT GUID: 78462415-6133-431C-9FAE-48F2BAFD5C71<p>
-      -   Monaco ESRT GUID: 8BF4424F-E842-409C-80BE-1418E91EF343<p>
+      -   QCS6490 ESRT GUID: 6F25BFD2-A165-468B-980F-AC51A0A45C52<p>
+      -   QCS9100 ESRT GUID: 78462415-6133-431C-9FAE-48F2BAFD5C71<p>
+      -   QCS8300 ESRT GUID: 8BF4424F-E842-409C-80BE-1418E91EF343<p>
 
 5. **Generate the Capsule File:**
    ```sh
