@@ -32,7 +32,10 @@ QcFMPRoot.pub.pem
 QcFMPSub.pub.pem
 ```
 
-The `QcFMPRoot.cer` (or `NewRoot.cer`) should be converted to a hex value provided in the BOOT DT at `/sw/uefi/uefiplat/QcCapsuleRootCert`.
+The `QcFMPRoot.cer` (or `NewRoot.cer`) should be converted to a hex value and to be provided in the BOOT DT [will be part of xbl_config.elf] at node `/sw/uefi/uefiplat/QcCapsuleRootCert` using QDTE tool
+
+For more information on QDTE Tool, please refer https://docs.qualcomm.com/bundle/publicresource/topics/80-70017-4/tools.html?vproduct=1601111740013072&version=1.3&facet=Boot#qdte
+
 Need to use BinToHex.py tool to convert `NewRoot.cer` to a Hex value
 
 ```
@@ -45,7 +48,7 @@ BintoHex.py  <InputFile> <OutputFile>
 
 
 ## 4. Steps to Generate Capsule Files
-
+ Clone this using "git clone https://github.com/quic/cbsp-boot-utilities.git" and enter in to  directory **cbsp-boot-utilities/uefi_capsule_generation/**
 1. **Setup the Environment:**
    ```sh
    python3 capsule_setup.py
@@ -70,15 +73,14 @@ BintoHex.py  <InputFile> <OutputFile>
    
    
 3. **Create Firmware Volume (FV):**
-   ```sh
-   python3 FVCreation.py firmware.fv "-FvType" "SYS_FW" "FvUpdate.xml" SYSFW_VERSION.bin Images/
-   ```
 
       ***\* Ensure the /Images folder contains all the required firmware images for Capsule generation***<p>
       ***\* Update FvUpdate.xml with FwEntry for each firmware image, referencing the corresponding image in the /Images folder.***<p>
       ***\* Please refer FirmwarePartitions.md for Partitions related information***
-
-   
+   ```sh
+   python3 FVCreation.py firmware.fv "-FvType" "SYS_FW" "FvUpdate.xml" SYSFW_VERSION.bin Images/
+   ```
+  
    firmware.fv: The firmware volume file.<p>
    -FvType: Type of firmware volume.<p>
    FvUpdate_UFS.xml: XML file for firmware update.<p>
@@ -118,10 +120,12 @@ BintoHex.py  <InputFile> <OutputFile>
    ```
    python3 .\GenerateCapsule.py  --dump-info <capsule_name>.cap
    ```
-
    - The above command witll dump the info from Capsule headers.
 
-6. Master script for Capsule Generation:
+##
+Instead of above 5 steps we can execute the below single script
+#              
+ Master script for Capsule Generation:
 
    You can use the following Master script to run all the above steps in single step:.
    ```
