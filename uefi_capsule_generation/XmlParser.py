@@ -112,6 +112,8 @@ def parse_input_xml(s_xml_file, s_breaking_change_number, g_dynamic_var):
 
 
     # print("\n\n\nin custom code:")
+    if isinstance(result_dict["FwEntry"], OrderedDict):
+        result_dict["FwEntry"] = [result_dict["FwEntry"]]
     for fw_entry in result_dict["FwEntry"]:
         raw_fw_item = FVC_h.XML_RAW_FWENTRY()
 

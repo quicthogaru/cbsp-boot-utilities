@@ -1,28 +1,6 @@
 # Partition Table
 
-<style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 16px; /* Increased font size */
-    }
-    th, td {
-        border: 1px solid black;
-        padding: 8px;
-        text-align: center;
-        color:rgb(0, 0, 0);
-    }
-    th {
-        background-color:rgb(72, 97, 243);
-        color: white;
-    }
-    tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-    tr:nth-child(odd) {
-        background-color:rgb(223, 232, 252);
-    }
-</style>
+
 
 | **Label** | **GUID** | **UFS** | **EMMC** | **Targets Supported** |
 |:---------:|:--------:|:-------------:|:-------------:|:--------------------:|
