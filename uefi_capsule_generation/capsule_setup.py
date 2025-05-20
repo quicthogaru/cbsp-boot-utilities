@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+# Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 # --------------------------------------------------------------------
 
@@ -23,6 +23,7 @@ import traceback
 
 edk2_branch="edk2-stable202008"
 edk2_git_repo_sync_url = "https://github.com/tianocore/edk2.git"
+edk2_windows_base_tools_url = "https://github.com/tianocore/edk2-BaseTools-win32.git"
 generate_capsule_py_sync_url = "https://raw.githubusercontent.com/tianocore" \
     "/edk2/ef91b07388e1c0a50c604e5350eeda98428ccea6/BaseTools/Source/Python" \
     "/Capsule/GenerateCapsule.py"
@@ -148,7 +149,7 @@ def print_header_sync_edk2_win(clone_dir, git_command):
     print("Copying edk2")
     print("--------------------------------------------------------------" \
           "------------------------------------")
-    print(f"Github URL: {edk2_git_repo_sync_url}")
+    print(f"Github URL: {edk2_windows_base_tools_url}")
     print(f"Clone local path: {clone_dir}")
     print(f"git clone command: {git_command}")
     print("--------------------------------------------------------------" \
@@ -162,7 +163,8 @@ def sync_edk2_win(clone_dir):
         print("\n\nedk2  found\n\n")
         return "edk2  found"
 
-    git_command = "git clone %s %s" % (edk2_git_repo_sync_url, clone_dir)
+    # git_command = "git clone %s %s" % (edk2_git_repo_sync_url, clone_dir)
+    git_command = "git clone %s %s" % (edk2_windows_base_tools_url, clone_dir)
     print_header_sync_edk2_win(clone_dir, git_command)
 
     if not validators.url(edk2_git_repo_sync_url):
@@ -233,11 +235,6 @@ def sync_and_build_edk2_win(clone_dir, full_build):
         edk2_get_repo_sync_stats = sync_edk2_win(clone_dir)
         if edk2_get_repo_sync_stats != True:
             return edk2_get_repo_sync_stats
-
-        edk2_build_stats = build_edk2_win(clone_dir, full_build)
-
-        if edk2_build_stats != True:
-            return edk2_build_stats
 
 
 ###
@@ -580,14 +577,8 @@ def Main(args):
                                                          'GenerateCapsule.py')
         edk2_sync_local_path_abs = os.path.join(base_dir_abs, 'edk2')
         genffs_sync_path_win_abs = os.path.join(edk2_sync_local_path_abs,
-                                                'BaseTools',
-                                                'Bin',
-                                                'Win32',
                                                 'GenFfs.exe')
         genfv_sync_path_win_abs = os.path.join(edk2_sync_local_path_abs,
-                                               'BaseTools',
-                                               'Bin',
-                                               'Win32',
                                                'GenFv.exe')
         genffs_local_path_abs = os.path.join(base_dir_abs, 'GenFfs.exe')
         genfv_local_path_abs = os.path.join(base_dir_abs, 'GenFv.exe')
