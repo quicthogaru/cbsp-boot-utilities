@@ -67,7 +67,7 @@ BintoHex.py  <InputFile> <OutputFile>
    -O: Output file name.<p>
 
    ```
-   python3 SYSFW_VERSION_program.py  --PrintAll .\SYSFW_VERSION.bin
+   python3 SYSFW_VERSION_program.py  --PrintAll SYSFW_VERSION.bin 
    ```
    - Then above command will print the Firmware Verions in the .bin file
    
@@ -119,7 +119,7 @@ BintoHex.py  <InputFile> <OutputFile>
    -v: Verbose mode.<p>
 
    ```
-   python3 .\GenerateCapsule.py  --dump-info <capsule_name>.cap
+   python3 GenerateCapsule.py  --dump-info capsule.cap 
    ```
    - The above command witll dump the info from Capsule headers.
 
