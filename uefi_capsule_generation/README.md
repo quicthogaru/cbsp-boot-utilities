@@ -71,7 +71,26 @@ BintoHex.py  <InputFile> <OutputFile>
    ```
    - Then above command will print the Firmware Verions in the .bin file
    
+3. **Generate/Update FvUpdate.xml with Firmware entries:**
+      
+      This script will generate FvUdpate.xml file, with Firmware Entries,
+   ```sh
+   python3 UpdateFvXml.py -S <StorageType> -T <Target>
+
+   or
+
+   python3 UpdateFvXml.py -F <Local partition.conf file>
+   ```
+   StorageType[-S]: Can be EMMC/UFS<p>
+   Local partition.conf file [-F]: Path of partition.conf file<p>
+   Target[-T]: Can be ***QCS6490*** / ***QCS9100*** / ***QCS8300*** / ***QCS615*** <p>
+   usage: UpdateFvXml.py [-h] (-T TARGET & -S {UFS,EMMC}) | [-F PARTITIONS_CONF]<p>
    
+   ***Once the FvUpdate.xml file is generated, please update the Operation to be performed on the each Firmware entry***<p>
+   ***By default the Operation type will be set to IGNORE***<p>
+   
+
+
 3. **Create Firmware Volume (FV):**
 
       ***\* Ensure the /Images folder contains all the required firmware images for Capsule generation***<p>
@@ -89,7 +108,7 @@ BintoHex.py  <InputFile> <OutputFile>
 
 4. **Update JSON Parameters:**
    ```sh
-   python3 UpdateJsonParameters.py -j config.json -f SYS_FW -b SYSFW_VERSION.bin -pf firmware.fv -p Certificates/QcFMPCert.pem -x Certificates/QcFMPRoot.pub.pem -oc Certificates/QcFMPSub.pub.pem -g <ESRT GUID>
+   python3 UpdateJsonParameters.py -j config.json -f SYS_FW -b SYSFW_VERSION.bin -pf firmware.fv -p Certificates/QcFMPCert.pem -x Certificates/QcFMPRoot.pub.pem -oc Certificates/QcFMPSub.pub.pem -g <ESRT GUID> -S <StorageType> -T <Target>
    ```
 
 
@@ -100,12 +119,16 @@ BintoHex.py  <InputFile> <OutputFile>
    -p Certificates/QcFMPCert.pem: Certificate file.<p>
    -x Certificates/QcFMPRoot.pub.pem: Root public certificate.<p>
    -oc Certificates/QcFMPSub.pub.pem: Subordinate public certificate.<p>
+   -S <StorageType>: EMMC/UFS <p>
+   -T <Target>: ***QCS6490*** / ***QCS9100*** / ***QCS8300*** / ***QCS615*** <p>
    -g <ESRT GUID>: ESRT GUID.<p>
        ESRT GUIDs :<p>
       -   QCS6490 ESRT GUID: 6F25BFD2-A165-468B-980F-AC51A0A45C52<p>
       -   QCS9100 ESRT GUID: 78462415-6133-431C-9FAE-48F2BAFD5C71<p>
       -   QCS8300 ESRT GUID: 8BF4424F-E842-409C-80BE-1418E91EF343<p>
       -   QCS615 ESRT GUID: 9FD379D2-670E-4BB3-86A1-40497E6E17B0<p>
+
+
 
 5. **Generate the Capsule File:**
    ```sh
