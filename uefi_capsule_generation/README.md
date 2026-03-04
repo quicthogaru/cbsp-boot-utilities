@@ -106,7 +106,7 @@ BintoHex.py  <InputFile> <OutputFile>
 
 4. **Update JSON Parameters:**
    ```sh
-   python3 UpdateJsonParameters.py -j config.json -f SYS_FW -b SYSFW_VERSION.bin -pf firmware.fv -p Certificates/QcFMPCert.pem -x Certificates/QcFMPRoot.pub.pem -oc Certificates/QcFMPSub.pub.pem -g <ESRT GUID> -S <StorageType> -T <Target>
+   python3 UpdateJsonParameters.py -j config.json -f SYS_FW -b SYSFW_VERSION.bin -pf firmware.fv -p Certificates/QcFMPCert.pem -x Certificates/QcFMPRoot.pub.pem -oc Certificates/QcFMPSub.pub.pem -g <ESRT GUID>
    ```
 
 
@@ -117,8 +117,6 @@ BintoHex.py  <InputFile> <OutputFile>
    -p Certificates/QcFMPCert.pem: Certificate file.<p>
    -x Certificates/QcFMPRoot.pub.pem: Root public certificate.<p>
    -oc Certificates/QcFMPSub.pub.pem: Subordinate public certificate.<p>
-   -S <StorageType>: EMMC/UFS <p>
-   -T <Target>: ***QCS6490*** / ***QCS9100*** / ***QCS8300*** / ***QCS615*** <p>
    -g <ESRT GUID>: ESRT GUID.<p>
        ESRT GUIDs :<p>
       -   QCS6490 ESRT GUID: 6F25BFD2-A165-468B-980F-AC51A0A45C52<p>
@@ -149,6 +147,8 @@ Instead of above 5 steps we can execute the below single script
 
    You can use the following Master script to run all the above steps in single step:.
    ```
-   python3 capsule_creator.py -fwver 0.0.A.B -lfwver 0.0.0.0 -config config.json -p Certificates/QcFMPCert.pem -x Certificates/QcFMPRoot.pub.pem -oc Certificates/QcFMPSub.pub.pem -guid <ESRT GUID> -capsule <capsule_name>.cap -images /Images -setup
+   python3 capsule_creator.py -fwver 0.0.A.B -lfwver 0.0.0.0 -config config.json -p Certificates/QcFMPCert.pem -x Certificates/QcFMPRoot.pub.pem -oc Certificates/QcFMPSub.pub.pem -guid <ESRT GUID> -capsule <capsule_name>.cap -images /Images -setup -S <StorageType> -T <Target>
    ```
+   -S <StorageType>: EMMC/UFS <p>
+   -T <Target>: ***QCS6490*** / ***QCS9100*** /***QCS8300*** / ***QCS615*** <p>
    The **-setup** parameter is optional and can be used for the initial setup. You can omit it in subsequent runs
