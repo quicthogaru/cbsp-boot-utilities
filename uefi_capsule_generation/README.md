@@ -70,6 +70,42 @@ BintoHex.py  <InputFile> <OutputFile>
 This `NewRoot.inc` contains the cert value, which needs to be provided in the
 Boot DT at `/sw/uefi/uefiplat/QcCapsuleRootCert` (using QDTE tool).
 
+### 3.2 Setting QcCapsuleRootCert Without QDTE
+
+As an alternative to QDTE, you can patch the certificate directly into
+`xbl_config.elf` using `xblconfig_parser.py` and `set_dtb_property.py`.
+
+1. Extract all DTB payloads from `xbl_config.elf`:
+
+   ```sh
+   python3 xblconfig_parser.py xbl_config.elf dump --out-dir ./out
+   ```
+
+1. Patch the `QcCapsuleRootCert` property into the appropriate DTB.
+   The target is the DTB containing the `/sw/uefi/uefiplat` node
+   (typically a `post-ddr` DTB):
+
+   ```sh
+   python3 set_dtb_property.py \
+     out/<post-ddr-dtb>.dtb \
+     /sw/uefi/uefiplat \
+     QcCapsuleRootCert \
+     @list:QcFMPRoot.inc \
+     out/<post-ddr-dtb>_patched.dtb
+   ```
+
+   The `@list:QcFMPRoot.inc` argument reads the integer list produced by
+   `BinToHex.py` and encodes it as 32-bit big-endian words into the DTB
+   property.
+
+1. Replace the patched DTB back into `xbl_config.elf`. Use the program
+   header index (`<ph_num>`) shown by the `dump` step above:
+
+   ```sh
+   python3 xblconfig_parser.py xbl_config.elf replace \
+     <ph_num> out/<post-ddr-dtb>_patched.dtb xbl_config_patched.elf
+   ```
+
 ## 4. Steps to Generate Capsule Files
 
 Clone the repository and enter the
