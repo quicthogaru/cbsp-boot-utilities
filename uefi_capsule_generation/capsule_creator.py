@@ -25,7 +25,8 @@ def main(args):
     run_command(f"python3 SYSFW_VERSION_program.py -Gen -FwVer {args.fwver} -LFwVer {args.lfwver} -O SYSFW_VERSION.bin")
 
     # Step 2: Create FvUpdate.xml
-    run_command(f'python3 UpdateFvXml.py -S {args.S} -T {args.t}')
+    ptool_path_arg = f'--ptool-path {args.ptool_path}' if args.ptool_path else ''
+    run_command(f'python3 UpdateFvXml.py -S {args.S} -T {args.t} {ptool_path_arg}')
 
     # Step 3: Create firmware volume
     edk2_path_arg = f'--edk2-path {args.edk2_path}' if args.edk2_path else ''
@@ -57,6 +58,9 @@ if __name__ == "__main__":
     parser.add_argument('--edk2-path', dest='edk2_path', default=None,
                         help='Path to an existing edk2 directory with built GenFfs/GenFv tools; '
                              'when provided, capsule_setup.py does not need to be run')
+    parser.add_argument('--ptool-path', dest='ptool_path', default=None,
+                        help='Path to an existing qcom-ptool directory; '
+                             'when provided, the repository is not cloned')
     parser.add_argument("-S", "--StorageType", choices=["UFS", "EMMC"], required=True, help="Specify storage type: UFS or EMMC")
     parser.add_argument("-T", "--target", required=True, help="Specify target platform (e.g., QCS6490)")
 

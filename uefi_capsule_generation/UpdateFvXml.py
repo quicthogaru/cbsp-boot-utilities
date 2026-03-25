@@ -12,6 +12,7 @@ import sys
 
 REPO_URL = "https://github.com/qualcomm-linux/qcom-ptool.git"
 REPO_DIR = "qcom-ptool"
+DEFAULT_REPO_DIR = REPO_DIR
 
 SUPPORTED_PLATFORMS = {
     "QCS6490": "qcs6490-rb3gen2",
@@ -25,10 +26,10 @@ def get_target_name(soc_name):
         if soc_name == platform:
             return target
 
-def safe_clone():
-    if not os.path.exists(REPO_DIR):
+def safe_clone(repo_dir):
+    if not os.path.exists(repo_dir):
         try:
-            subprocess.run(["git", "clone", REPO_URL], check=True)
+            subprocess.run(["git", "clone", REPO_URL, repo_dir], check=True)
         except subprocess.CalledProcessError as e:
             print(f"Error cloning repo: {e}")
             sys.exit(1)
@@ -167,7 +168,12 @@ def main():
     parser.add_argument('-T', metavar='TARGET', help='Target argument')
     parser.add_argument("-S", "--StorageType", choices=["UFS", "EMMC"], help="Specify storage type: UFS or EMMC")
     parser.add_argument('-F', metavar='PARTITIONS_CONF', help='Partitions config argument')
+    parser.add_argument('--ptool-path', dest='ptool_path', default=None,
+                        help='Path to an existing qcom-ptool directory; '
+                             'when provided, the repository is not cloned')
     args = parser.parse_args()
+
+    repo_dir = args.ptool_path if args.ptool_path else DEFAULT_REPO_DIR
 
     if args.F:
         if args.StorageType:
@@ -179,16 +185,17 @@ def main():
         partition_conf_path = args.F
         lines = read_partitions_conf(partition_conf_path)
         args.StorageType = detect_storage_type_from_conf(lines)
-    elif args.T :
+    elif args.T:
         if not args.StorageType:
             print("Error: You must provide -S/--StorageType when using -T/--target.")
             sys.exit(1)
-        safe_clone()
+        if not args.ptool_path:
+            safe_clone(repo_dir)
         target = get_target_name(args.T)
         if not target:
             print(f"Provided target is Unknown !!! Please re-check")
             sys.exit(1)
-        partition_conf_path = os.path.join(REPO_DIR, "platforms", target, "ufs", "partitions.conf")
+        partition_conf_path = os.path.join(repo_dir, "platforms", target, "ufs", "partitions.conf")
         lines = read_partitions_conf(partition_conf_path)
     else:
         print("Error: Invalid argument combination.")
