@@ -247,17 +247,18 @@ def generate_fv_main_file(lsFFsFiles):
         return False
 
 
-def generate_fv(s_output_file_name, ls_ffs, s_gen_fv):
+def generate_fv(s_output_file_name, ls_ffs, s_gen_fv, tools_dir=None):
     bReturn = False
     if not generate_fv_main_file(ls_ffs):
         print(f"ERROR: Failure creating {FV_MAIN_INF_NAME} file.")
         return False
-    
+
     if platform.system() == "Linux":
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        sFVCommand = f"{dir_path}/GenFv -o {s_output_file_name} -i {FV_MAIN_INF_NAME} -v"
+        if tools_dir is None:
+            tools_dir = os.path.dirname(os.path.realpath(__file__))
+        sFVCommand = f"{tools_dir}/GenFv -o {s_output_file_name} -i {FV_MAIN_INF_NAME} -v"
         execute_command_linux(sFVCommand)
-    
+
     if platform.system() == "Windows":
         sFVCommand = f"{s_gen_fv} -o {s_output_file_name} -i {FV_MAIN_INF_NAME} -v"
         execute_command(sFVCommand)
@@ -434,7 +435,8 @@ def process_sys_fw_ffs_creation(
         fw_ver_binary_data,
         ls_ffs,
         ls_paths,
-        g_dynamic_var
+        g_dynamic_var,
+        tools_dir=None
     ):
     try:
         #
@@ -490,7 +492,7 @@ def process_sys_fw_ffs_creation(
         #
         # Generate FFS file of each input binary
         #
-        if not generate_sys_fw_ffs_list(ls_ffs, s_gen_ffs, ls_paths, g_dynamic_var):
+        if not generate_sys_fw_ffs_list(ls_ffs, s_gen_ffs, ls_paths, g_dynamic_var, tools_dir):
             print("ERROR: Error Generating FFS files.")
             return False
         elif print_logs >= 2:
@@ -502,7 +504,7 @@ def process_sys_fw_ffs_creation(
     return True
 
 
-def generate_sys_fw_ffs_list(ls_ffs, s_gen_ffs, ls_paths, g_dynamic_var):
+def generate_sys_fw_ffs_list(ls_ffs, s_gen_ffs, ls_paths, g_dynamic_var, tools_dir=None):
     
     try:
         for raw_fwentry in g_dynamic_var.XmlRawFwEntryList:
@@ -530,10 +532,11 @@ def generate_sys_fw_ffs_list(ls_ffs, s_gen_ffs, ls_paths, g_dynamic_var):
             # execute GenFfs in Linux
             #
             if platform.system() == "Linux":
-                dir_path = os.path.dirname(os.path.realpath(__file__))
+                if tools_dir is None:
+                    tools_dir = os.path.dirname(os.path.realpath(__file__))
                 raw_fwentry_FileGuid_uuid_bytes_obj = bytes(raw_fwentry.FileGuid)
                 raw_fwentry_FileGuid_uuid_str = str(uuid.UUID(bytes=raw_fwentry_FileGuid_uuid_bytes_obj))
-                s_command = f"{dir_path}/GenFfs -o {s_file_name}.ffs -t EFI_FV_FILETYPE_RAW -g {raw_fwentry_FileGuid_uuid_str} -s -v -i {os.path.join(s_dir_path, raw_fwentry.InputBinary)}"
+                s_command = f"{tools_dir}/GenFfs -o {s_file_name}.ffs -t EFI_FV_FILETYPE_RAW -g {raw_fwentry_FileGuid_uuid_str} -s -v -i {os.path.join(s_dir_path, raw_fwentry.InputBinary)}"
                 execute_command_linux(s_command)
 
             #
@@ -552,8 +555,9 @@ def generate_sys_fw_ffs_list(ls_ffs, s_gen_ffs, ls_paths, g_dynamic_var):
 
         print(f"INFO: Creating ffs file for {SYS_FW_METADATA_FILE}.")
         if platform.system() == "Linux":
-            dir_path = os.path.dirname(os.path.realpath(__file__))
-            s_command = f"{dir_path}/GenFfs -o {s_file_name}.ffs -t EFI_FV_FILETYPE_RAW -g {s_guid} -s -v -i {SYS_FW_METADATA_FILE}"
+            if tools_dir is None:
+                tools_dir = os.path.dirname(os.path.realpath(__file__))
+            s_command = f"{tools_dir}/GenFfs -o {s_file_name}.ffs -t EFI_FV_FILETYPE_RAW -g {s_guid} -s -v -i {SYS_FW_METADATA_FILE}"
             execute_command_linux(s_command)
 
         if platform.system() == "Windows":
@@ -628,16 +632,30 @@ class Arguments:
 def The_Main(args):
 
     s_breaking_change_number = "0"
-    ls_ffs = []  
-    ls_paths = []  
+    ls_ffs = []
+    ls_paths = []
     g_dynamic_var = FVC_h.GlobalDynamicVariable()
     fw_ver_binary_data = FVC_h.QSYS_FW_VERSION_DATA()
     fw_version = 0
     lowest_supported_fw_version = 0
     s_gen_ffs = "GenFfs.exe"
-    s_gen_fv = "GenFv.exe" 
+    s_gen_fv = "GenFv.exe"
+    tools_dir = None
+
+    # Extract --edk2-path if provided; derive tools_dir from it
+    args = list(args)
+    for i, arg in enumerate(args):
+        if arg in ('--edk2-path', '-edk2path') and i + 1 < len(args):
+            edk2_path = args[i + 1]
+            if platform.system() == "Linux":
+                tools_dir = os.path.join(edk2_path, 'BaseTools', 'Source', 'C', 'bin')
+            elif platform.system() == "Windows":
+                tools_dir = edk2_path
+            del args[i:i + 2]
+            break
+
     # fv_type = FV_TYPE.UNKNOWN
-    
+
     # Skipping the re-creation of all executables
     if len(args) == 1 and args[0].lower() == "-v":
         print("Version: %s" % (TOOL_VERSION_STRING))
@@ -660,18 +678,19 @@ def The_Main(args):
         for i in range(5, len(args)):
             ls_paths.append(args[i])
         
-        r = process_sys_fw_ffs_creation(s_xml_file_name=s_xml_file_name, 
-                                        s_fw_ver_binary_file=s_fw_ver_binary_file, 
-                                        s_gen_ffs= "GenFfs.exe",
-                                        s_breaking_change_number=s_breaking_change_number, 
-                                        fw_ver_binary_data=fw_ver_binary_data, 
-                                        ls_ffs=ls_ffs, 
-                                        ls_paths=ls_paths, 
-                                        g_dynamic_var=g_dynamic_var)
+        r = process_sys_fw_ffs_creation(s_xml_file_name=s_xml_file_name,
+                                        s_fw_ver_binary_file=s_fw_ver_binary_file,
+                                        s_gen_ffs=s_gen_ffs,
+                                        s_breaking_change_number=s_breaking_change_number,
+                                        fw_ver_binary_data=fw_ver_binary_data,
+                                        ls_ffs=ls_ffs,
+                                        ls_paths=ls_paths,
+                                        g_dynamic_var=g_dynamic_var,
+                                        tools_dir=tools_dir)
         if not r:
             print("process_sys_fw_ffs_creation failed")
     
-    if not generate_fv(s_output_file_name, ls_ffs, s_gen_fv):
+    if not generate_fv(s_output_file_name, ls_ffs, s_gen_fv, tools_dir):
         print("GenerateFV failed.\n")
         return
     else:
