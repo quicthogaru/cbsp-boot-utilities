@@ -121,6 +121,13 @@ git clone https://github.com/quic/cbsp-boot-utilities.git
    python3 capsule_setup.py
    ```
 
+   This clones edk2, builds `GenFfs`/`GenFv`, and downloads
+   `GenerateCapsule.py` alongside the scripts.
+
+   If you already have a local edk2 build, you can skip this step and
+   pass `--edk2-path <dir>` to `FVCreation.py` / `capsule_creator.py`
+   instead (see steps 4 and 5).
+
 1. **Generate Firmware Version bin File:**
 
    ```sh
@@ -159,6 +166,8 @@ git clone https://github.com/quic/cbsp-boot-utilities.git
    - `-T <Target>`: Target platform, `QCS6490`, `QCS9100`, `QCS8300`,
      or `QCS615`.
    - `-F <partition.conf>`: Path to a local `partition.conf` file.
+   - `--ptool-path <dir>`: Path to an existing `qcom-ptool` checkout.
+     When provided, the repository is not cloned from GitHub.
 
    Once `FvUpdate.xml` is generated, update the `Operation` field for
    each firmware entry as needed. By default the operation is set to
@@ -179,10 +188,14 @@ git clone https://github.com/quic/cbsp-boot-utilities.git
 
    - `firmware.fv`: The firmware volume file.
    - `-FvType`: Type of firmware volume.
-   - `FvUpdate_UFS.xml`: XML file for firmware update.
+   - `FvUpdate.xml`: XML file for firmware update.
    - `SYSFW_VERSION.bin`: The firmware version file generated in the
      previous step.
    - `Images/`: Directory containing the images.
+   - `--edk2-path <dir>`: Path to an existing edk2 directory with built
+     `GenFfs`/`GenFv` tools. When provided, `capsule_setup.py` does not
+     need to be run. On Linux the binaries are resolved from
+     `<dir>/BaseTools/Source/C/bin/`.
 
 1. **Update JSON Parameters:**
 
@@ -263,3 +276,29 @@ python3 capsule_creator.py \
 
 The **-setup** parameter is optional and can be used for the initial setup.
 You can omit it in subsequent runs.
+
+If you have a local edk2 build and/or a local `qcom-ptool` checkout,
+you can skip the setup step entirely by providing their paths directly:
+
+```sh
+python3 capsule_creator.py \
+  -fwver 0.0.A.B \
+  -lfwver 0.0.0.0 \
+  -config config.json \
+  -p Certificates/QcFMPCert.pem \
+  -x Certificates/QcFMPRoot.pub.pem \
+  -oc Certificates/QcFMPSub.pub.pem \
+  -guid <ESRT GUID> \
+  -capsule <capsule_name>.cap \
+  -images /Images \
+  -S <StorageType> \
+  -T <Target> \
+  --edk2-path /path/to/edk2 \
+  --ptool-path /path/to/qcom-ptool
+```
+
+ - `--edk2-path <dir>`: Path to an existing edk2 directory with built
+   `GenFfs`/`GenFv` tools. `GenerateCapsule.py` and its `Common/`
+   dependency are also resolved from this tree.
+ - `--ptool-path <dir>`: Path to an existing `qcom-ptool` checkout.
+   When provided, the repository is not cloned from GitHub.
