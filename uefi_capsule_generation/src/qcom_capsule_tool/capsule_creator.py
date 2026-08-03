@@ -91,9 +91,9 @@ def main():
     parser.add_argument(
         "-S",
         "--StorageType",
-        choices=["UFS", "EMMC"],
+        choices=["UFS", "EMMC", "NORUFS", "NORNVME"],
         required=True,
-        help="Specify storage type: UFS or EMMC",
+        help="Specify storage type: UFS, EMMC, NORUFS, or NORNVME",
     )
     parser.add_argument(
         "-T", "--target", required=True, help="Specify target platform (e.g., QCS6490)"

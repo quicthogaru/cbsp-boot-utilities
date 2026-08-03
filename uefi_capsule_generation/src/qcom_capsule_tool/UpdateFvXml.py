@@ -19,6 +19,12 @@ SUPPORTED_PLATFORMS = {
     "QCS9100": "qcs9100-ride-sx",
     "QCS8300": "qcs8300-ride-sx",
     "QCS615": "qcs615-adp-air",
+    "QRB2210": "qrb2210-rb1",
+    "CQ2390M": "shikra-evk",
+    "IQ-X7181": "iq-x7181-evk",
+    "IQ-X5121": "iq-x7181-evk",
+    "Kaanapali": "kaanapali-mtp",
+    "SM8750": "sm8750-mtp",
 }
 
 
@@ -52,6 +58,8 @@ def detect_storage_type_from_conf(lines):
             return "UFS"
         elif re.search(r"--type=emmc", line, re.IGNORECASE):
             return "EMMC"
+        elif re.search(r"--type=spinor", line, re.IGNORECASE):
+            return "SPINOR"
     print("Error: Could not detect StorageType from partitions.conf.")
     sys.exit(1)
 
@@ -65,7 +73,7 @@ def parse_partition_info(args, lines, storage_type):
         r"--name=(?P<name>[\w\-]+)\s+"
         r"--size=\d+KB\s+"
         r"--type-guid=(?P<guid>[\w\-]+)"
-        r"(?:\s+--type=(?P<type>ufs|emmc))?"
+        r"(?:\s+--type=(?P<type>ufs|emmc|spinor))?"
         r"(?:\s+--filename=(?P<filename>[\w.\-]+))?",
         re.IGNORECASE,
     )
@@ -79,8 +87,8 @@ def parse_partition_info(args, lines, storage_type):
         guid = gd["guid"]
         filename = gd.get("filename") or f"{name}.img"
 
-        # Determine whether we expect a LUN (UFS) or not (eMMC without -F)
-        want_lun = (storage_type == "UFS") or (storage_type == "EMMC" and not args.F)
+        # Only UFS partition lines carry a LUN; eMMC and SPINOR never do.
+        want_lun = storage_type == "UFS"
 
         if want_lun:
             # For UFS we only accept LUN 1 or 4
@@ -88,7 +96,7 @@ def parse_partition_info(args, lines, storage_type):
                 continue
             entry = {"lun": lun, "guid": guid, "filename": filename}
         else:
-            # For eMMC (when -F is used) we ignore entries that contain a LUN
+            # For eMMC/SPINOR we ignore entries that contain a LUN
             if lun is not None:
                 continue
             entry = {"guid": guid, "filename": filename}
@@ -98,14 +106,35 @@ def parse_partition_info(args, lines, storage_type):
 
 
 def find_base_names(partition_info):
-    base_names = set()
+    """Detect primary/backup partition pairs.
+
+    Two naming conventions are used across targets: `<base>_a`/`<base>_b`
+    (e.g. UFS targets like Kaanapali) and `<base>`/`<base>_BACKUP` (e.g.
+    SPINOR targets like Hamoa/Purwa). Returns a list of
+    (base, primary_name, backup_name) tuples.
+    """
+    pairs = []
+    seen = set()
     for name in partition_info:
-        if name.endswith("_a") and name[:-2] + "_b" in partition_info:
-            base_names.add(name[:-2])
-    return base_names
+        if name in seen:
+            continue
+        if name.endswith("_a"):
+            backup_name = name[:-2] + "_b"
+            if backup_name in partition_info:
+                base = name[:-2]
+                pairs.append((base, name, backup_name))
+                seen.update((name, backup_name))
+                continue
+        if name.endswith("_BACKUP"):
+            continue
+        backup_name = f"{name}_BACKUP"
+        if backup_name in partition_info:
+            pairs.append((name, name, backup_name))
+            seen.update((name, backup_name))
+    return pairs
 
 
-def create_xml(args, base_names, partition_info):
+def create_xml(args, pairs, partition_info):
     doc = minidom.Document()
     fvitems = doc.createElement("FVItems")
     doc.appendChild(fvitems)
@@ -117,12 +146,14 @@ def create_xml(args, base_names, partition_info):
         metadata.appendChild(elem)
     fvitems.appendChild(metadata)
 
-    for base in sorted(base_names):
-        part_a = partition_info[f"{base}_a"]
-        part_b = partition_info[f"{base}_b"]
+    for base, primary_name, backup_name in sorted(pairs, key=lambda p: p[0]):
+        part_a = partition_info[primary_name]
+        part_b = partition_info[backup_name]
 
         if args.StorageType == "UFS":
             disk_type = f"UFS_LUN{part_a['lun']}"
+        elif args.StorageType in ("SPINOR", "NORUFS", "NORNVME"):
+            disk_type = "SPINOR"
         else:
             disk_type = "EMMC_PARTITION_USER_DATA"
 
@@ -141,7 +172,7 @@ def create_xml(args, base_names, partition_info):
         dest = doc.createElement("Dest")
         for tag, text in [
             ("DiskType", disk_type),
-            ("PartitionName", f"{base}_a"),
+            ("PartitionName", primary_name),
             ("PartitionTypeGUID", part_a["guid"]),
         ]:
             elem = doc.createElement(tag)
@@ -152,7 +183,7 @@ def create_xml(args, base_names, partition_info):
         backup = doc.createElement("Backup")
         for tag, text in [
             ("DiskType", disk_type),
-            ("PartitionName", f"{base}_b"),
+            ("PartitionName", backup_name),
             ("PartitionTypeGUID", part_b["guid"]),
         ]:
             elem = doc.createElement(tag)
@@ -175,15 +206,16 @@ def main():
         description="Generate FvUpdate.xml from partitions.conf"
     )
     custom_usage = (
-        "UpdateFvXml.py [-h] (-T TARGET & -S {UFS,EMMC}) | [-F PARTITIONS_CONF]"
+        "UpdateFvXml.py [-h] (-T TARGET & -S {UFS,EMMC,NORUFS,NORNVME}) "
+        "| [-F PARTITIONS_CONF]"
     )
     parser = argparse.ArgumentParser(usage=custom_usage)
     parser.add_argument("-T", metavar="TARGET", help="Target argument")
     parser.add_argument(
         "-S",
         "--StorageType",
-        choices=["UFS", "EMMC"],
-        help="Specify storage type: UFS or EMMC",
+        choices=["UFS", "EMMC", "NORUFS", "NORNVME"],
+        help="Specify storage type: UFS, EMMC, NORUFS, or NORNVME",
     )
     parser.add_argument(
         "-F", metavar="PARTITIONS_CONF", help="Partitions config argument"
@@ -223,8 +255,13 @@ def main():
         if not target:
             print("Provided target is Unknown !!! Please re-check")
             sys.exit(1)
+        conf_dir = (
+            "spinor"
+            if args.StorageType in ("NORUFS", "NORNVME")
+            else args.StorageType.lower()
+        )
         partition_conf_path = os.path.join(
-            repo_dir, "platforms", target, "ufs", "partitions.conf"
+            repo_dir, "platforms", target, conf_dir, "partitions.conf"
         )
         lines = read_partitions_conf(partition_conf_path)
     else:
@@ -233,12 +270,12 @@ def main():
         sys.exit(1)
 
     partition_info = parse_partition_info(args, lines, args.StorageType)
-    base_names = find_base_names(partition_info)
-    if not base_names:
+    pairs = find_base_names(partition_info)
+    if not pairs:
         print(
-            "Warning: No partition pairs (_a/_b) found. FvUpdate.xml will not contain FwEntry blocks."
+            "Warning: No partition pairs (_a/_b or _BACKUP) found. FvUpdate.xml will not contain FwEntry blocks."
         )
-    doc = create_xml(args, base_names, partition_info)
+    doc = create_xml(args, pairs, partition_info)
     write_xml(doc)
     print(
         f"FvUpdate.xml has been created successfully with StorageType={args.StorageType}."
