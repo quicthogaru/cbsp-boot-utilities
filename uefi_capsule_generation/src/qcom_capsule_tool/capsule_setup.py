@@ -31,6 +31,10 @@ def _is_http_url(url):
 
 edk2_branch = "edk2-stable202008"
 edk2_git_repo_sync_url = "https://github.com/tianocore/edk2.git"
+# BaseTools is built from source with -Werror, so an unpinned master
+# clone breaks whenever a new edk2/toolchain combination introduces a
+# warning. Pin to a stable release.
+edk2_pin_tag = "edk2-stable202605"
 generate_capsule_py_sync_url = (
     "https://raw.githubusercontent.com/tianocore"
     "/edk2/ef91b07388e1c0a50c604e5350eeda98428ccea6/BaseTools/Source/Python"
@@ -41,6 +45,23 @@ basetools_common_sync_url = (
     "edk2-stable202008/BaseTools/Source/Python/Common"
 )
 BROTLI_SUBMODULE_PATH = "BaseTools/Source/C/BrotliCompress/brotli"
+
+
+def _clone_edk2_pinned(edk2_dir_path):
+    """Shallow-clone edk2 at the pinned stable release tag."""
+    subprocess.run(
+        [
+            "git",
+            "clone",
+            "--depth",
+            "1",
+            "--branch",
+            edk2_pin_tag,
+            edk2_git_repo_sync_url,
+            edk2_dir_path,
+        ],
+        check=True,
+    )
 
 
 ###
@@ -150,18 +171,8 @@ def sync_edk2_linux(edk2_git_repo_sync_url, edk2_dir_path):
     print_header_sync_edk2_linux(edk2_dir_path)
 
     try:
-        subprocess.run(
-            [
-                "git",
-                "clone",
-                "--depth",
-                "1",
-                edk2_git_repo_sync_url,
-                edk2_dir_path,
-            ],
-            check=True,
-        )
-        print(f"Repository cloned into {edk2_dir_path}")
+        _clone_edk2_pinned(edk2_dir_path)
+        print(f"Repository cloned into {edk2_dir_path} at {edk2_pin_tag}")
 
     except subprocess.CalledProcessError as e:
         print(f"Error cloning repository: {e}")
@@ -210,18 +221,8 @@ def sync_edk2_win(clone_dir):
         return f"Invalid URL: {edk2_git_repo_sync_url}"
 
     try:
-        subprocess.run(
-            [
-                "git",
-                "clone",
-                "--depth",
-                "1",
-                edk2_git_repo_sync_url,
-                clone_dir,
-            ],
-            check=True,
-        )
-        print("\n\n\nEdk2 cloning complete\n\n")
+        _clone_edk2_pinned(clone_dir)
+        print(f"\n\n\nEdk2 cloning complete at {edk2_pin_tag}\n\n")
     except Exception:
         print("\n", traceback.format_exc())
         print("\nFailed to sync edk2 from github\n\n")
