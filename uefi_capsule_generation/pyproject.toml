@@ -17,8 +17,8 @@ pyelftools = "*"
 pylibfdt = "*"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "*"
-mypy = "*"
+ruff = "0.15.16"
+mypy = "1.19.1"
 types-requests = "*"
 
 [tool.poetry.scripts]
