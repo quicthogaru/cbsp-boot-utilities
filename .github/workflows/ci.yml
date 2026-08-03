@@ -80,6 +80,23 @@ jobs:
             mingw-w64-x86_64-curl
             mingw-w64-x86_64-dtc
 
+      - name: Pin mingw-w64 toolchain (Windows)
+        if: runner.os == 'Windows'
+        # mingw-w64 r179 removed the noreturn attribute from _assert/
+        # _wassert (commit ecf2328a32), so gcc 16 can no longer prune
+        # the assert-guarded out-of-range path in edk2 BaseTools
+        # CommonLib.c StrToIpv6Address and fails the -Werror build with
+        # stringop-overflow. Pin headers/crt/gcc to the versions from
+        # the last green run (2026-06-24) until the edk2 BaseTools
+        # dependency is dropped.
+        run: |
+          pacman -U --noconfirm \
+            https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-headers-14.0.0.r98.g19f5121a2-1-any.pkg.tar.zst \
+            https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-crt-14.0.0.r98.g19f5121a2-1-any.pkg.tar.zst \
+            https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-libs-16.1.0-5-any.pkg.tar.zst \
+            https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-16.1.0-5-any.pkg.tar.zst
+        shell: msys2 {0}
+
       - name: Cache downloaded boot binaries
         uses: actions/cache@v4
         with:
