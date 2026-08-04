@@ -100,7 +100,7 @@ certificates as mentioned in
 [Capsule-Based System Firmware Update - Generate Keys][capsule-keys].
 These certificates should be placed in a separate folder named 'Certificates'.
 
-[capsule-keys]: https://github.com/tianocore/tianocore.github.io/wiki/Capsule-Based-System-Firmware-Update-Generate-Keys
+[capsule-keys]: https://www.tianocore.org/tianocore-wiki.github.io/reference/specs-standards/capsule_based_system_firmware_update_generate_keys.html
 
 Sample Certificates folder:
 
@@ -219,8 +219,6 @@ git clone https://github.com/quic/cbsp-boot-utilities.git
 
 1. **Generate/Update FvUpdate.xml with Firmware entries:**
 
-  * For targets IQ-X7181-EVK, IQ-X5121, Kaanapali-MTP, SM8750-MTP - Manually update FvUpdate.xml (UpdateFvXml.py not supported yet)
-
    This subcommand generates the `FvUpdate.xml` file with firmware
    entries:
 
@@ -234,9 +232,11 @@ git clone https://github.com/quic/cbsp-boot-utilities.git
    qcom-capsule-tool update-fv-xml -F <partition.conf>
    ```
 
-   - `-S <StorageType>`: Storage type, `EMMC` or `UFS`.
+   - `-S <StorageType>`: Storage type, `EMMC`, `UFS`, `NORUFS`, or `NORNVME`.
    - `-T <Target>`: Target platform, `QCS6490`, `QCS9100`, `QCS8300`,
-     or `QCS615`.
+     `QCS615`, `QRB2210` (Agatti, EMMC), `CQ2390M` (Shikra, EMMC),
+     `IQ-X7181` (Hamoa, NORUFS/NORNVME), `IQ-X5121` (Purwa, NORUFS/NORNVME),
+     `Kaanapali` (UFS), or `SM8750` (Pakala, UFS).
    - `-F <partition.conf>`: Path to a local `partition.conf` file.
    - `--ptool-path <dir>`: Path to an existing `qcom-ptool` checkout.
      When provided, the repository is not cloned from GitHub.
@@ -354,9 +354,10 @@ qcom-capsule-tool create \
   -T <Target>
 ```
 
- - `-S <StorageType>`: Storage type, `EMMC` or `UFS`.
+ - `-S <StorageType>`: Storage type, `EMMC`, `UFS`, `NORUFS`, or `NORNVME`.
  - `-T <Target>`: Target platform, `QCS6490`, `QCS9100`, `QCS8300`,
-   or `QCS615`.
+   `QCS615`, `QRB2210`, `CQ2390M`, `IQ-X7181`, `IQ-X5121`, `Kaanapali`,
+   or `SM8750`.
 
 The **-setup** parameter is optional and can be used for the initial setup.
 You can omit it in subsequent runs.
